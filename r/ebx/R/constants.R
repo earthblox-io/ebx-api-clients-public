@@ -29,7 +29,9 @@ API_SECRETS_PATH <- local({
   p <- tools::R_user_dir("ebx", which = "data")
   root <- p
   while (!dir.exists(root)) root <- dirname(root)
-  if (file.access(root, mode = 2) != 0) file.path(tempdir(), "ebx") else p
+  path <- if (file.access(root, mode = 2) != 0) file.path(tempdir(), "ebx") else p
+  message("ebx: using secrets path: ", path)
+  path
 })
 
 #' @keywords internal
