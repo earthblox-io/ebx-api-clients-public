@@ -57,3 +57,50 @@ LocalFilePersistence <- R6::R6Class(
     }
   )
 )
+
+#' @title MemoryPersistence
+#' @description R6 class for persisting credentials in memory (e.g. on hosted
+#'   environments such as shinyapps.io where the local filesystem is not
+#'   writable). Data is lost when the R session ends.
+#' @importFrom R6 R6Class
+#' @importFrom jsonlite fromJSON toJSON
+#' @export
+MemoryPersistence <- R6::R6Class(
+  "MemoryPersistence",
+  public = list(
+    #' @field store Named list used as an in-memory store
+    store = NULL,
+
+    #' @description Create a new MemoryPersistence object
+    #' @return A new MemoryPersistence object
+    initialize = function() {
+      self$store <- list()
+    },
+
+    #' @description Save data to memory
+    #' @param filename The key to store data under
+    #' @param data The data to save (serialised via JSON for consistency)
+    #' @return NULL (invisible)
+    save = function(filename, data) {
+      self$store[[filename]] <- data
+      invisible(NULL)
+    },
+
+    #' @description Load data from memory
+    #' @param filename The key to load data from
+    #' @return The stored data as a list
+    load = function(filename) {
+      if (!self$exists(filename)) {
+        stop(sprintf("Key '%s' does not exist in memory store", filename))
+      }
+      self$store[[filename]]
+    },
+
+    #' @description Check if a key exists in memory
+    #' @param filename The key to check
+    #' @return TRUE if the key exists, FALSE otherwise
+    exists = function(filename) {
+      !is.null(self$store[[filename]])
+    }
+  )
+)

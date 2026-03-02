@@ -26,7 +26,22 @@ ClientConfig <- R6::R6Class(
       self$base_url <- BASE_URL
       self$api_prefix <- API_PREFIX
       self$oauth_path <- OAUTH_PATH
-      self$persistence_driver <- LocalFilePersistence$new(path = API_SECRETS_PATH)
+      # Select persistence driver based on whether the secrets directory (or its
+      # nearest existing ancestor) is writable.  On hosted environments such as
+      # shinyapps.io the XDG data directory is not writable, so we fall back to
+      # an in-memory store that lives only for the duration of the R session.
+      self$persistence_driver <- local({
+        p <- API_SECRETS_PATH
+        root <- p
+        while (nchar(root) > 1 && !dir.exists(root)) root <- dirname(root)
+        writable <- tryCatch({
+          tf <- tempfile(tmpdir = root)
+          file.create(tf)
+          file.remove(tf)
+          TRUE
+        }, error = function(e) FALSE, warning = function(w) FALSE)
+        if (writable) LocalFilePersistence$new(path = p) else MemoryPersistence$new()
+      })
       
       # Override with environment variables if set
       emulator_host <- Sys.getenv("EBX_API_EMULATOR_HOST", unset = "")
