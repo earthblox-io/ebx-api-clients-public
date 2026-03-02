@@ -23,7 +23,14 @@ API_SECRETS_FILE <- ".ebx.auth.json"
 
 #' @keywords internal
 #' Uses tools::R_user_dir() to comply with CRAN policy (requires R >= 4.0.0).
-API_SECRETS_PATH <- tools::R_user_dir("ebx", which = "data")
+#' Falls back to tempdir() on hosted environments (e.g. shinyapps.io) where
+#' the XDG base directory ancestor may not be writable.
+API_SECRETS_PATH <- local({
+  p <- tools::R_user_dir("ebx", which = "data")
+  root <- p
+  while (!dir.exists(root)) root <- dirname(root)
+  if (file.access(root, mode = 2) != 0) file.path(tempdir(), "ebx") else p
+})
 
 #' @keywords internal
 API_TOKEN_FILE <- ".ebx.token.json"
