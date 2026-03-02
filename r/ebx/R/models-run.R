@@ -102,31 +102,6 @@ Run <- R6::R6Class(
         json_str <- jsonlite::prettify(json_str)
       }
       json_str
-    },
-    
-    #' @description Convert Run to a plain list
-    #' @return A list containing all run fields
-    to_list = function() {
-      list(
-        id = self$id,
-        project_id = self$project_id,
-        status = self$status,
-        created_at = self$created_at,
-        updated_at = self$updated_at,
-        name = self$name
-      )
-    },
-    
-    #' @description Convert Run to JSON string
-    #' @param pretty Whether to pretty-print the JSON (default: TRUE)
-    #' @param ... Additional arguments passed to jsonlite::toJSON
-    #' @return A JSON string representation of the run
-    to_json = function(pretty = TRUE, ...) {
-      json_str <- jsonlite::toJSON(self$to_list(), auto_unbox = TRUE, ...)
-      if (pretty) {
-        json_str <- jsonlite::prettify(json_str)
-      }
-      json_str
     }
   )
 )
