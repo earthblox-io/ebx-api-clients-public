@@ -24,6 +24,22 @@ R6 class representing a project
 \item{\code{variables}}{List of project variables}
 
 \item{\code{exec_parameters}}{Execution parameters configuration}
+
+\item{\code{portfolio_metric}}{Portfolio metric data returned for analytics projects}
+
+\item{\code{analytics}}{Analytics metadata or payload returned by the API}
+
+\item{\code{payload}}{Raw analytics-project payload, preserved as returned}
+
+\item{\code{projectType}}{API project type, including analytics projects}
+
+\item{\code{api_data}}{Complete API record, including fields not modeled directly}
+
+\item{\code{hasMetric}}{Whether the project has a metric}
+
+\item{\code{type}}{The project type}
+
+\item{\code{analyticsEnabled}}{Whether analytics are enabled}
 }
 \if{html}{\out{</div>}}
 }
@@ -52,6 +68,13 @@ Create a new Project object
   api_access = NULL,
   variables = NULL,
   exec_parameters = NULL,
+  portfolio_metric = NULL,
+  analytics = NULL,
+  payload = NULL,
+  projectType = NULL,
+  hasMetric = NULL,
+  type = NULL,
+  analyticsEnabled = NULL,
   title = NULL,
   ...
 )}\if{html}{\out{</div>}}
@@ -76,9 +99,24 @@ Create a new Project object
 
 \item{\code{exec_parameters}}{Execution parameters}
 
+\item{\code{portfolio_metric}}{Portfolio metric data, preserved as returned}
+
+\item{\code{analytics}}{Analytics metadata or payload, preserved as returned}
+
+\item{\code{payload}}{Raw analytics-project payload, preserved as returned}
+
+\item{\code{projectType}}{API project type}
+
+\item{\code{hasMetric}}{API metric filter value}
+
+\item{\code{type}}{Project type}
+
+\item{\code{analyticsEnabled}}{API analytics-enabled value}
+
 \item{\code{title}}{Alternative name for 'name' field (API compatibility)}
 
-\item{\code{...}}{Additional fields (ignored)}
+\item{\code{...}}{Additional API fields retained in \code{api_data}; these are
+not included when serializing a workflow run specification}
 }
 \if{html}{\out{</div>}}
 }

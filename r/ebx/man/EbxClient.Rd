@@ -23,8 +23,12 @@ R6 class for Earth Blox API client
 \item \href{#method-EbxClient-new}{\code{EbxClient$new()}}
 \item \href{#method-EbxClient-get_headers}{\code{EbxClient$get_headers()}}
 \item \href{#method-EbxClient-parse_response}{\code{EbxClient$parse_response()}}
+\item \href{#method-EbxClient-request}{\code{EbxClient$request()}}
 \item \href{#method-EbxClient-get}{\code{EbxClient$get()}}
 \item \href{#method-EbxClient-post}{\code{EbxClient$post()}}
+\item \href{#method-EbxClient-put}{\code{EbxClient$put()}}
+\item \href{#method-EbxClient-patch}{\code{EbxClient$patch()}}
+\item \href{#method-EbxClient-delete}{\code{EbxClient$delete()}}
 \item \href{#method-EbxClient-clone}{\code{EbxClient$clone()}}
 }
 }
@@ -86,6 +90,43 @@ The parsed response data
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EbxClient-request"></a>}}
+\if{latex}{\out{\hypertarget{method-EbxClient-request}{}}}
+\subsection{Method \code{request()}}{
+Make an HTTP request to the API
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EbxClient$request(
+  method,
+  url,
+  query_params = NULL,
+  payload = NULL,
+  headers = NULL,
+  timeout = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{HTTP method}
+
+\item{\code{url}}{The endpoint URL}
+
+\item{\code{query_params}}{Query parameters (optional)}
+
+\item{\code{payload}}{Request payload (optional)}
+
+\item{\code{headers}}{Additional headers (optional)}
+
+\item{\code{timeout}}{Request timeout in seconds (optional)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The parsed response data
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EbxClient-get"></a>}}
 \if{latex}{\out{\hypertarget{method-EbxClient-get}{}}}
 \subsection{Method \code{get()}}{
@@ -117,7 +158,13 @@ The parsed response data
 \subsection{Method \code{post()}}{
 Make a POST request to the API
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EbxClient$post(url, payload = NULL, headers = NULL, timeout = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{EbxClient$post(
+  url,
+  payload = NULL,
+  headers = NULL,
+  timeout = NULL,
+  query_params = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -126,6 +173,110 @@ Make a POST request to the API
 \item{\code{url}}{The endpoint URL}
 
 \item{\code{payload}}{The request payload (optional)}
+
+\item{\code{headers}}{Additional headers (optional)}
+
+\item{\code{timeout}}{Request timeout in seconds (optional)}
+
+\item{\code{query_params}}{Query parameters (optional)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The parsed response data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EbxClient-put"></a>}}
+\if{latex}{\out{\hypertarget{method-EbxClient-put}{}}}
+\subsection{Method \code{put()}}{
+Make a PUT request to the API
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EbxClient$put(
+  url,
+  payload = NULL,
+  query_params = NULL,
+  headers = NULL,
+  timeout = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{url}}{The endpoint URL}
+
+\item{\code{payload}}{Request payload (optional)}
+
+\item{\code{query_params}}{Query parameters (optional)}
+
+\item{\code{headers}}{Additional headers (optional)}
+
+\item{\code{timeout}}{Request timeout in seconds (optional)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The parsed response data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EbxClient-patch"></a>}}
+\if{latex}{\out{\hypertarget{method-EbxClient-patch}{}}}
+\subsection{Method \code{patch()}}{
+Make a PATCH request to the API
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EbxClient$patch(
+  url,
+  payload = NULL,
+  query_params = NULL,
+  headers = NULL,
+  timeout = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{url}}{The endpoint URL}
+
+\item{\code{payload}}{Request payload (optional)}
+
+\item{\code{query_params}}{Query parameters (optional)}
+
+\item{\code{headers}}{Additional headers (optional)}
+
+\item{\code{timeout}}{Request timeout in seconds (optional)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The parsed response data
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EbxClient-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-EbxClient-delete}{}}}
+\subsection{Method \code{delete()}}{
+Make a DELETE request to the API
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EbxClient$delete(
+  url,
+  query_params = NULL,
+  payload = NULL,
+  headers = NULL,
+  timeout = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{url}}{The endpoint URL}
+
+\item{\code{query_params}}{Query parameters (optional)}
+
+\item{\code{payload}}{Request payload (optional)}
 
 \item{\code{headers}}{Additional headers (optional)}
 

@@ -300,6 +300,34 @@ test_that("get_layers applies filter", {
   expect_type(layers, "list")
 })
 
+# get_workflow_layers tests
+test_that("get_workflow_layers returns layer data for exporting workflows", {
+  mock_response <- list(data = list(list(title = "Layer 1"), list(title = "Layer 2")))
+
+  mock_client <- list(
+    get = function(url, query_params = NULL) {
+      expect_equal(url, "/runs/run_123/layers")
+      return(mock_response)
+    }
+  )
+
+  local_mocked_bindings(get_client = function() mock_client, .package = "ebx")
+
+  layers <- get_workflow_layers("run_123")
+  expect_length(layers, 2)
+})
+
+test_that("get_workflow_layers warns and returns an empty list when a workflow exports no layers", {
+  mock_client <- list(get = function(url, query_params = NULL) list(data = list()))
+  local_mocked_bindings(get_client = function() mock_client, .package = "ebx")
+
+  expect_warning(
+    layers <- get_workflow_layers("run_123"),
+    "does not export any layers"
+  )
+  expect_identical(layers, list())
+})
+
 # follow_run tests
 test_that("follow_run polls until completion", {
   call_count <- 0

@@ -26,6 +26,18 @@ R6 class representing a run
 \item{\code{outputs}}{The outputs (charts/tables) associated with the run}
 
 \item{\code{name}}{The run name (optional)}
+
+\item{\code{error_code}}{Error code returned by the API}
+
+\item{\code{tasks}}{Task references returned by the API}
+
+\item{\code{variables}}{Run variables returned by the API}
+
+\item{\code{monitor_id}}{Associated monitor ID}
+
+\item{\code{schedule_id}}{Associated schedule ID}
+
+\item{\code{json}}{Raw JSON payload returned by the API}
 }
 \if{html}{\out{</div>}}
 }
@@ -55,6 +67,12 @@ Create a new Run object
   layers = NULL,
   outputs = NULL,
   name = NULL,
+  error_code = NULL,
+  tasks = NULL,
+  variables = NULL,
+  monitor_id = NULL,
+  schedule_id = NULL,
+  json = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -79,6 +97,18 @@ Create a new Run object
 \item{\code{outputs}}{The outputs list}
 
 \item{\code{name}}{The run name (optional)}
+
+\item{\code{error_code}}{Error code}
+
+\item{\code{tasks}}{Task references}
+
+\item{\code{variables}}{Run variables}
+
+\item{\code{monitor_id}}{Associated monitor ID}
+
+\item{\code{schedule_id}}{Associated schedule ID}
+
+\item{\code{json}}{Raw JSON payload}
 
 \item{\code{...}}{Additional fields (ignored)}
 }

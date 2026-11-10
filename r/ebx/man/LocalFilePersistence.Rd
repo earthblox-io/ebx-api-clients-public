@@ -29,13 +29,14 @@ R6 class for persisting credentials to local filesystem
 \subsection{Method \code{new()}}{
 Create a new LocalFilePersistence object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LocalFilePersistence$new(path = API_SECRETS_PATH)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LocalFilePersistence$new(path)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{The directory path for storing files}
+\item{\code{path}}{The directory path for storing files. Must be supplied
+explicitly; no default is provided to comply with CRAN policy.}
 }
 \if{html}{\out{</div>}}
 }

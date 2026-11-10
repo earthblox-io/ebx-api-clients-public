@@ -22,8 +22,7 @@ API_PREFIX <- paste0("/", VERSION)
 API_SECRETS_FILE <- ".ebx.auth.json"
 
 #' @keywords internal
-#' Uses tools::R_user_dir() to comply with CRAN policy (requires R >= 4.0.0).
-API_SECRETS_PATH <- tools::R_user_dir("ebx", which = "data")
+API_SECRETS_PATH <- file.path(tempdir(), "ebx")
 
 #' @keywords internal
 API_TOKEN_FILE <- ".ebx.token.json"

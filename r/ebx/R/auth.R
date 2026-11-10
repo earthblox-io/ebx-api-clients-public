@@ -100,6 +100,54 @@ EnvAuthentication <- R6::R6Class(
   )
 )
 
+#' @title UserTokenAuthentication
+#' @description Authentication using a caller-supplied bearer token
+#' @importFrom R6 R6Class
+#' @export
+UserTokenAuthentication <- R6::R6Class(
+  "UserTokenAuthentication",
+  inherit = AbstractAuthentication,
+  public = list(
+    #' @description Create token-only authentication without persistence
+    #' @param config The client configuration
+    #' @param token The caller-supplied bearer token
+    initialize = function(config, token) {
+      if (!is.character(token) || length(token) != 1L || is.na(token) || !nzchar(token)) {
+        stop("token must be a non-empty character string")
+      }
+      self$config <- config
+      private$bearer_token <- token
+    },
+
+    #' @description User tokens are not refreshed by this client
+    #' @return FALSE
+    has_expired = function() FALSE,
+
+    #' @description Refuse to refresh a caller-supplied user token
+    #' @return An error explaining that the token must be replaced
+    refresh = function() {
+      stop("User API tokens cannot be refreshed; supply a valid token")
+    },
+
+    #' @description Get the bearer authorization header
+    #' @return A named character vector of headers
+    get_headers = function() {
+      c(Authorization = paste("Bearer", private$bearer_token))
+    },
+
+    #' @description Print authentication details without disclosing the token
+    #' @param ... Additional arguments (ignored)
+    #' @return This authentication object invisibly
+    print = function(...) {
+      cat("<UserTokenAuthentication: bearer token redacted>\n")
+      invisible(self)
+    }
+  ),
+  private = list(
+    bearer_token = NULL
+  )
+)
+
 #' @title BasicAuth
 #' @description Authentication using username and password
 #' @importFrom R6 R6Class

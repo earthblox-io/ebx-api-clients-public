@@ -21,27 +21,25 @@ ClientConfig <- R6::R6Class(
     persistence_driver = NULL,
     
     #' @description Create a new ClientConfig object
+    #' @param persistence_driver Optional persistence driver to use for storing
+    #'   credentials. If NULL (default), a \code{LocalFilePersistence} writing
+    #'   to a sub-directory of \code{tempdir()} is used. Pass a
+    #'   \code{MemoryPersistence} instance for hosted environments such as
+    #'   shinyapps.io where file persistence might be undesirable.
     #' @return A new ClientConfig object
-    initialize = function() {
+    initialize = function(persistence_driver = NULL) {
       self$base_url <- BASE_URL
       self$api_prefix <- API_PREFIX
       self$oauth_path <- OAUTH_PATH
-      # Select persistence driver based on whether the secrets directory (or its
-      # nearest existing ancestor) is writable.  On hosted environments such as
-      # shinyapps.io the XDG data directory is not writable, so we fall back to
-      # an in-memory store that lives only for the duration of the R session.
-      self$persistence_driver <- local({
-        p <- API_SECRETS_PATH
-        root <- p
-        while (nchar(root) > 1 && !dir.exists(root)) root <- dirname(root)
-        writable <- tryCatch({
-          tf <- tempfile(tmpdir = root)
-          file.create(tf)
-          file.remove(tf)
-          TRUE
-        }, error = function(e) FALSE, warning = function(w) FALSE)
-        if (writable) LocalFilePersistence$new(path = p) else MemoryPersistence$new()
-      })
+      # Credentials are stored under a sub-directory of tempdir() by default,
+      # which is always writable and does not touch the user's home filespace.
+      # A custom driver (e.g. MemoryPersistence) can be injected via the
+      # persistence_driver argument.
+      self$persistence_driver <- if (!is.null(persistence_driver)) {
+        persistence_driver
+      } else {
+        LocalFilePersistence$new(path = API_SECRETS_PATH)
+      }
       
       # Override with environment variables if set
       emulator_host <- Sys.getenv("EBX_API_EMULATOR_HOST", unset = "")
@@ -75,6 +73,15 @@ ClientConfig <- R6::R6Class(
     #' @return The persistence driver
     get_persistence_driver = function() {
       self$persistence_driver
+    },
+
+    #' @description Set the persistence driver
+    #' @param driver A persistence driver object (e.g. \code{LocalFilePersistence}
+    #'   or \code{MemoryPersistence})
+    #' @return self (invisible)
+    set_persistence_driver = function(driver) {
+      self$persistence_driver <- driver
+      invisible(self)
     }
   )
 )
@@ -88,9 +95,11 @@ ServiceClientConfig <- R6::R6Class(
   inherit = ClientConfig,
   public = list(
     #' @description Create a new ServiceClientConfig object
+    #' @param persistence_driver Optional persistence driver (see
+    #'   \code{ClientConfig}).
     #' @return A new ServiceClientConfig object
-    initialize = function() {
-      super$initialize()
+    initialize = function(persistence_driver = NULL) {
+      super$initialize(persistence_driver = persistence_driver)
       self$api_prefix <- ""
       self$base_url <- BASE_URL
       

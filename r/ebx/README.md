@@ -5,9 +5,14 @@ Version 1.0.0 - Alpha stage, Earth Blox Client Library for R.
 [Earth Blox](https://www.earthblox.io) - measure climate and nature risk for all your economic assets and facilities worldwide.
 Earth Blox gives sustainability teams satellite imagery analytics to report on climate and biodiversity impacts, risks, and opportunities for millions of assets in minutes.
 
+CRAN location: https://CRAN.R-project.org/package=ebx
+
 ## Installation
 
 ```r
+# Install from CRAN
+install.packages("ebx")
+
 # Install from local directory
 install.packages("path/to/ebx-api-clients/r", repos = NULL, type = "source")
 
@@ -32,7 +37,7 @@ oauth_client <- create_oauth_client(email, password, name)
 oauth_client$save()  # persist the client details including the secret to disk for later use
 ```
 
-By default, the details are saved in a file at `.ebx/.ebx.auth.json` in the current working directory. Locations can be changed (see below).
+By default, the details are saved in a file at `.ebx/.ebx.auth.json` in the temp directory. Locations can be changed (see below).
 
 ## Authentication
 
@@ -71,6 +76,20 @@ Sys.setenv(EBX_API_TOKEN = "your_token_here")
 auth_using_env()
 list_projects()
 ```
+
+For short-lived user API tokens, pass the token directly instead. This does not
+perform a login, persist the token, or refresh it automatically:
+
+```r
+auth_using_token(user_token)
+list_monitors()
+```
+
+Monitoring endpoints require server authorization for a privileged user role
+(`admin`, `superadmin`, `customer_support`, `creator`, `explorer`, or `monitor`).
+OAuth client-credentials tokens usually lack these permissions; a `401` or `403`
+from a monitoring endpoint indicates that the supplied credentials are not
+authorized.
 
 ## Using the API
 
@@ -112,6 +131,9 @@ projects2 <- list_projects()
 # List all projects
 projects <- list_projects()
 
+# Filter projects by title and metric availability
+projects <- list_projects(title = "Coastal", has_metric = TRUE)
+
 # Get a specific project
 project <- get_project(project_id = "project_123")
 ```
@@ -122,11 +144,17 @@ project <- get_project(project_id = "project_123")
 # List runs (default limit: 10)
 runs <- list_runs(limit = 20)
 
+# Request raw run JSON along with the documented run fields
+runs_with_json <- list_runs(limit = 20, include_json = TRUE)
+
 # Get a specific run
 run <- get_run(run_id = "run_123")
+run_with_json <- get_run(run_id = "run_123", include_json = TRUE)
 
 # Get run status
 status <- get_run_status(run_id = "run_123")
+# Structured status including error_code
+status_details <- get_run_status(run_id = "run_123", details = TRUE)
 
 # Create a new run (Method 1: Using project_spec with variables - recommended)
 spec <- Project$new(
@@ -164,7 +192,82 @@ tables_filtered <- get_tables(run_id = "run_123", filter = "summary")
 # Get layers from a run (with optional filter)
 layers <- get_layers(run_id = "run_123")
 layers_filtered <- get_layers(run_id = "run_123", filter = "vegetation")
+# Include the API response metadata without changing the default return value
+chart_response <- get_charts(run_id = "run_123", include_meta = TRUE)
 ```
+
+### Monitors, Schedules, and Alerts
+
+These endpoints return records as structured lists, preserving nested API
+payloads, null values, and evolving fields.
+
+```r
+monitors <- list_monitors()
+monitor <- get_monitor("monitor_123")
+cycles <- list_monitor_cycles("monitor_123", limit = 5)
+results <- get_monitor_results("monitor_123", cycle_limit = 5)
+cycle <- get_monitor_cycle("cycle_123")
+
+schedules <- list_schedules()
+schedule <- get_schedule("schedule_123")
+
+alerts <- list_alerts(monitor_id = "monitor_123")
+alert <- get_alert("alert_123")
+updated_alert <- update_alert("alert_123", is_read = TRUE)
+updated_alert <- update_alert("alert_123", status = "acknowledged")
+updated_count <- mark_all_alerts_read(monitor_id = "monitor_123")
+```
+
+### Datasets
+
+`create_dataset()` requests a signed upload URL from the API and then uploads
+the local file to it, which starts ingestion. Ingestion is asynchronous; use
+`follow_task()` with the returned `task_id` to wait for it. A finished task has
+status `SUCCEEDED` (with the new `dataset_id`), `FAILED` (with an `error`
+message) or `CANCELLED`. CSV/XLSX location uploads need `destination`, the
+latitude and longitude columns, and a type (`String`, `Integer`, `Decimal` or
+`Date`) for each column. Filenames may only contain letters, numbers, dashes,
+underscores and dots.
+
+```r
+upload <- create_dataset(
+    "sites.csv",
+    name = "My Sites",
+    type = "location",
+    destination = "bigquery",
+    lat_column = "lat",
+    lon_column = "lon",
+    columns = c(name = "String", lat = "Decimal", lon = "Decimal", value = "Decimal")
+)
+upload$task_id
+
+task <- follow_task(upload$task_id)
+task$status
+task$dataset_id
+
+datasets <- list_datasets()
+dataset <- get_dataset(task$dataset_id)
+
+# Uploads are private to the uploading user; share with the organisation
+dataset <- update_dataset(task$dataset_id, location = "organisation", permission = "viewable")
+```
+
+`update_dataset()` changes only the fields you supply. Moving a dataset to
+`location = "organisation"` requires `permission` (`"viewable"` or
+`"editable"`); `permission` can't be set for `"user"` datasets.
+
+Workflow project variables are passed through as supplied, including numeric
+and string values, both `date_range` and `date range` keys, and nullable area
+values or `location_name_column` fields. Analytics project payloads and
+`portfolio_metric` remain project response data and are not converted into a
+workflow run specification.
+
+`create_run()` accepts `NULL` for `include_geometry` and
+`generate_thumbnails`, sending explicit JSON nulls. Supplied request lists retain
+explicit null members and arrays, including unknown execution options such as
+`batch_mode`; omitted optional members remain omitted except for the existing
+run-type and output-option defaults. `follow_run()` stops on `completed`,
+`error`, `cancelled`, and legacy `failed`, with bounded polling for other statuses.
 
 ## Environment Variables
 

@@ -26,9 +26,11 @@ If provided, this takes precedence over individual parameters.}
 
 \item{study_area}{Optional study area - uses deprecated substitutions API}
 
-\item{include_geometry}{Whether to include geometry in output (default: FALSE)}
+\item{include_geometry}{Whether to include geometry in output (default: FALSE);
+NULL sends an explicit JSON null}
 
-\item{generate_thumbnails}{Whether to generate thumbnails for every layer (default: FALSE)}
+\item{generate_thumbnails}{Whether to generate thumbnails for every layer
+(default: FALSE); NULL sends an explicit JSON null}
 }
 \value{
 The run ID as a string

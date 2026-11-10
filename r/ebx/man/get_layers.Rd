@@ -4,15 +4,17 @@
 \alias{get_layers}
 \title{Get Layers}
 \usage{
-get_layers(run_id, filter = NULL)
+get_layers(run_id, filter = NULL, include_meta = FALSE)
 }
 \arguments{
 \item{run_id}{The run ID}
 
 \item{filter}{Optional filter to apply to layer titles}
+
+\item{include_meta}{Return the complete raw response envelope including metadata}
 }
 \value{
-A list of layer data
+Layer data by default; the raw \code{data}/\code{meta} envelope when requested
 }
 \description{
 Get layers from a run

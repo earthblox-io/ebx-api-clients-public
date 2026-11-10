@@ -4,11 +4,31 @@
 \alias{list_projects}
 \title{List Projects}
 \usage{
-list_projects()
+list_projects(
+  title = NULL,
+  has_metric = NULL,
+  type = NULL,
+  analytics_enabled = NULL,
+  hasMetric = NULL,
+  analyticsEnabled = NULL
+)
+}
+\arguments{
+\item{title}{Optional project-title filter}
+
+\item{has_metric}{Optional metric-presence filter}
+
+\item{type}{Optional type filter; the API currently supports the analytics type}
+
+\item{analytics_enabled}{Optional analytics-enabled filter}
+
+\item{hasMetric}{Deprecated alias for \code{has_metric}}
+
+\item{analyticsEnabled}{Deprecated alias for \code{analytics_enabled}}
 }
 \value{
 A list of Project objects
 }
 \description{
-List all available projects
+List available projects, optionally filtered by API project attributes
 }

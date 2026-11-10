@@ -1,12 +1,12 @@
 # Copyright (c) 2026 Quosient Ltd.
 # SPDX-License-Identifier: MIT
 
-#' @title ebx: Earth Blox API Client for R
+#' @title ebx: 'Earth Blox' API Client
 #'
 #' @description
-#' R client library for the Earth Blox API. Provides authentication
-#' and endpoints for interacting with Earth Blox geospatial analytics services.
-#' Compatible with Shiny for R applications.
+#' Client library for the 'Earth Blox' API. Provides authentication
+#' and endpoints for interacting with 'Earth Blox' geospatial analytics services.
+#' Compatible with 'Shiny' applications.
 #'
 #' @section Authentication:
 #' The package supports three authentication methods:

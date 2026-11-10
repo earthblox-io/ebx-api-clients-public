@@ -4,15 +4,17 @@
 \alias{get_charts}
 \title{Get Charts}
 \usage{
-get_charts(run_id, filter = NULL)
+get_charts(run_id, filter = NULL, include_meta = FALSE)
 }
 \arguments{
 \item{run_id}{The run ID}
 
 \item{filter}{Optional filter to apply to chart titles}
+
+\item{include_meta}{Return the complete raw response envelope including metadata}
 }
 \value{
-A list of chart data
+Chart data by default; the raw \code{data}/\code{meta} envelope when requested
 }
 \description{
 Get charts from a run

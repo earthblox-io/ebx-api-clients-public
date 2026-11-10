@@ -26,6 +26,7 @@ R6 class for Earth Blox API client configuration
 \item \href{#method-ClientConfig-get_api_base_url}{\code{ClientConfig$get_api_base_url()}}
 \item \href{#method-ClientConfig-get_oauth_url}{\code{ClientConfig$get_oauth_url()}}
 \item \href{#method-ClientConfig-get_persistence_driver}{\code{ClientConfig$get_persistence_driver()}}
+\item \href{#method-ClientConfig-set_persistence_driver}{\code{ClientConfig$set_persistence_driver()}}
 \item \href{#method-ClientConfig-clone}{\code{ClientConfig$clone()}}
 }
 }
@@ -35,9 +36,20 @@ R6 class for Earth Blox API client configuration
 \subsection{Method \code{new()}}{
 Create a new ClientConfig object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ClientConfig$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ClientConfig$new(persistence_driver = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{persistence_driver}}{Optional persistence driver to use for storing
+credentials. If NULL (default), a \code{LocalFilePersistence} writing
+to a sub-directory of \code{tempdir()} is used. Pass a
+\code{MemoryPersistence} instance for hosted environments such as
+shinyapps.io where file persistence might be undesirable.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 A new ClientConfig object
 }
@@ -79,6 +91,27 @@ Get the persistence driver
 
 \subsection{Returns}{
 The persistence driver
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ClientConfig-set_persistence_driver"></a>}}
+\if{latex}{\out{\hypertarget{method-ClientConfig-set_persistence_driver}{}}}
+\subsection{Method \code{set_persistence_driver()}}{
+Set the persistence driver
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ClientConfig$set_persistence_driver(driver)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{driver}}{A persistence driver object (e.g. \code{LocalFilePersistence}
+or \code{MemoryPersistence})}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+self (invisible)
 }
 }
 \if{html}{\out{<hr>}}

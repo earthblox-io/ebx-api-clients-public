@@ -149,3 +149,34 @@ test_that("get_project maps title to name", {
   expect_equal(project$id, "proj_456")
   expect_equal(project$name, "API Title")
 })
+
+test_that("get_persistent_layers returns the project's persistent layers", {
+  mock_response <- list(
+    data = list(
+      title = "Layers Project",
+      persistent_layers = list(
+        list(layer_id = "layer_1", title = "Layer 1"),
+        list(layer_id = "layer_2", title = "Layer 2")
+      )
+    )
+  )
+
+  mock_client <- list(get = function(url) mock_response)
+  local_mocked_bindings(get_client = function() mock_client, .package = "ebx")
+
+  layers <- get_persistent_layers("proj_789")
+  expect_length(layers, 2)
+  expect_equal(layers[[1]]$layer_id, "layer_1")
+})
+
+test_that("get_persistent_layers warns and returns an empty list when none are exported", {
+  mock_response <- list(data = list(title = "No Layers Project"))
+  mock_client <- list(get = function(url) mock_response)
+  local_mocked_bindings(get_client = function() mock_client, .package = "ebx")
+
+  expect_warning(
+    layers <- get_persistent_layers("proj_000"),
+    "does not export any persistent layers"
+  )
+  expect_identical(layers, list())
+})

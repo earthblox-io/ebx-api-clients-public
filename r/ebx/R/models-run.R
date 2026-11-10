@@ -34,6 +34,24 @@ Run <- R6::R6Class(
     
     #' @field name The run name (optional)
     name = NULL,
+
+    #' @field error_code Error code returned by the API
+    error_code = NULL,
+
+    #' @field tasks Task references returned by the API
+    tasks = NULL,
+
+    #' @field variables Run variables returned by the API
+    variables = NULL,
+
+    #' @field monitor_id Associated monitor ID
+    monitor_id = NULL,
+
+    #' @field schedule_id Associated schedule ID
+    schedule_id = NULL,
+
+    #' @field json Raw JSON payload returned by the API
+    json = NULL,
     
     #' @description Create a new Run object
     #' @param id The run ID
@@ -45,12 +63,20 @@ Run <- R6::R6Class(
     #' @param layers The layers list
     #' @param outputs The outputs list
     #' @param name The run name (optional)
+    #' @param error_code Error code
+    #' @param tasks Task references
+    #' @param variables Run variables
+    #' @param monitor_id Associated monitor ID
+    #' @param schedule_id Associated schedule ID
+    #' @param json Raw JSON payload
     #' @param ... Additional fields (ignored)
     #' @return A new Run object
     initialize = function(id = NULL, project_id = NULL, status = NULL, 
                          started_at = NULL, completed_at = NULL, 
                          exec_parameters = NULL, layers = NULL, outputs = NULL,
-                         name = NULL, ...) {
+                         name = NULL, error_code = NULL, tasks = NULL,
+                         variables = NULL, monitor_id = NULL, schedule_id = NULL,
+                         json = NULL, ...) {
       self$id <- id
       self$project_id <- project_id
       self$status <- status
@@ -60,6 +86,12 @@ Run <- R6::R6Class(
       self$layers <- layers
       self$outputs <- outputs
       self$name <- name
+      self$error_code <- error_code
+      self$tasks <- tasks
+      self$variables <- variables
+      self$monitor_id <- monitor_id
+      self$schedule_id <- schedule_id
+      self$json <- json
     },
     
     #' @description Print method for Run
@@ -88,7 +120,13 @@ Run <- R6::R6Class(
         exec_parameters = self$exec_parameters,
         layers = self$layers,
         outputs = self$outputs,
-        name = self$name
+        name = self$name,
+        error_code = self$error_code,
+        tasks = self$tasks,
+        variables = self$variables,
+        monitor_id = self$monitor_id,
+        schedule_id = self$schedule_id,
+        json = self$json
       )
     },
     

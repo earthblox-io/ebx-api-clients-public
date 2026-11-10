@@ -7,7 +7,7 @@
 R6 class for Earth Blox API client configuration for service endpoints
 }
 \section{Super class}{
-\code{ebx::ClientConfig} -> \code{ServiceClientConfig}
+\code{\link[ebx:ClientConfig]{ebx::ClientConfig}} -> \code{ServiceClientConfig}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -22,6 +22,7 @@ R6 class for Earth Blox API client configuration for service endpoints
 <li><span class="pkg-link" data-pkg="ebx" data-topic="ClientConfig" data-id="get_api_base_url"><a href='../../ebx/html/ClientConfig.html#method-ClientConfig-get_api_base_url'><code>ebx::ClientConfig$get_api_base_url()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ebx" data-topic="ClientConfig" data-id="get_oauth_url"><a href='../../ebx/html/ClientConfig.html#method-ClientConfig-get_oauth_url'><code>ebx::ClientConfig$get_oauth_url()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="ebx" data-topic="ClientConfig" data-id="get_persistence_driver"><a href='../../ebx/html/ClientConfig.html#method-ClientConfig-get_persistence_driver'><code>ebx::ClientConfig$get_persistence_driver()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="ebx" data-topic="ClientConfig" data-id="set_persistence_driver"><a href='../../ebx/html/ClientConfig.html#method-ClientConfig-set_persistence_driver'><code>ebx::ClientConfig$set_persistence_driver()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -31,9 +32,17 @@ R6 class for Earth Blox API client configuration for service endpoints
 \subsection{Method \code{new()}}{
 Create a new ServiceClientConfig object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ServiceClientConfig$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ServiceClientConfig$new(persistence_driver = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{persistence_driver}}{Optional persistence driver (see
+\code{ClientConfig}).}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 A new ServiceClientConfig object
 }

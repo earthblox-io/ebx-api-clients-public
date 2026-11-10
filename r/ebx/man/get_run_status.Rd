@@ -4,14 +4,20 @@
 \alias{get_run_status}
 \title{Get Run Status}
 \usage{
-get_run_status(run_id)
+get_run_status(run_id, details = FALSE)
 }
 \arguments{
 \item{run_id}{The run ID}
+
+\item{details}{Return the complete status response, including error details}
 }
 \value{
-The run status as a string
+The status string by default, or the full structured response when
+  \code{details = TRUE}
 }
 \description{
 Get the status of a specific run
+}
+\details{
+The default return value remains a status string for compatibility.
 }

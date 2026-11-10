@@ -4,15 +4,17 @@
 \alias{get_tables}
 \title{Get Tables}
 \usage{
-get_tables(run_id, filter = NULL)
+get_tables(run_id, filter = NULL, include_meta = FALSE)
 }
 \arguments{
 \item{run_id}{The run ID}
 
 \item{filter}{Optional filter to apply to table titles}
+
+\item{include_meta}{Return the complete raw response envelope including metadata}
 }
 \value{
-A list of table data
+Table data by default; the raw \code{data}/\code{meta} envelope when requested
 }
 \description{
 Get tables from a run

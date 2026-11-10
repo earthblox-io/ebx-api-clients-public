@@ -58,3 +58,37 @@ test_that("LocalFilePersistence handles missing files", {
   # Cleanup
   unlink(file.path(temp_dir, "ebx_test3"), recursive = TRUE)
 })
+
+test_that("MemoryPersistence can save and load data", {
+  persistence <- MemoryPersistence$new()
+
+  test_data <- list(
+    name = "test",
+    value = 123,
+    enabled = TRUE
+  )
+
+  persistence$save("my_key", test_data)
+  loaded_data <- persistence$load("my_key")
+
+  expect_equal(loaded_data$name, "test")
+  expect_equal(loaded_data$value, 123)
+  expect_equal(loaded_data$enabled, TRUE)
+})
+
+test_that("MemoryPersistence exists() returns FALSE for missing keys and TRUE after saving", {
+  persistence <- MemoryPersistence$new()
+
+  expect_false(persistence$exists("missing_key"))
+
+  persistence$save("my_key", list(x = 1))
+
+  expect_true(persistence$exists("my_key"))
+  expect_false(persistence$exists("missing_key"))
+})
+
+test_that("MemoryPersistence load() throws an error for a missing key", {
+  persistence <- MemoryPersistence$new()
+
+  expect_error(persistence$load("missing_key"), "does not exist")
+})

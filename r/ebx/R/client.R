@@ -4,7 +4,7 @@
 #' @title EbxClient
 #' @description R6 class for Earth Blox API client
 #' @importFrom R6 R6Class
-#' @importFrom httr2 request req_headers req_url_query req_body_json req_perform resp_body_json resp_body_string resp_content_type req_timeout
+#' @importFrom httr2 request req_headers req_url_query req_body_json req_perform resp_body_json resp_body_string resp_content_type req_timeout req_method
 #' @importFrom jsonlite toJSON
 #' @export
 EbxClient <- R6::R6Class(
@@ -53,22 +53,100 @@ EbxClient <- R6::R6Class(
     parse_response = function(response) {
       content_type <- httr2::resp_content_type(response)
       if (grepl("application/json", content_type, fixed = TRUE)) {
-            # print("Response parsed as JSON")
-        return(httr2::resp_body_json(response))
+        return(httr2::resp_body_json(response, simplifyVector = FALSE))
       } else if (grepl("text/html", content_type, fixed = TRUE)) {
         tryCatch({
-            # print("Response parsed as HTML")
             return(httr2::resp_body_string(response))
         }, error = function(e) {
-            # print("Response is not HTML")
-            return(httr2::resp_body_json(response))
+            return(httr2::resp_body_json(response, simplifyVector = FALSE))
         })
       } else if (grepl("text/", content_type, fixed = TRUE)) {
         return(httr2::resp_body_string(response))
       } else {
-        # Default to JSON for unknown types (backwards compatibility)
-        return(httr2::resp_body_json(response))
+        return(httr2::resp_body_json(response, simplifyVector = FALSE))
       }
+    },
+    
+    #' @description Make an HTTP request to the API
+    #' @param method HTTP method
+    #' @param url The endpoint URL
+    #' @param query_params Query parameters (optional)
+    #' @param payload Request payload (optional)
+    #' @param headers Additional headers (optional)
+    #' @param timeout Request timeout in seconds (optional)
+    #' @return The parsed response data
+    request = function(method, url, query_params = NULL, payload = NULL,
+                       headers = NULL, timeout = NULL) {
+      if (self$authenticator$has_expired()) {
+        self$authenticator <- self$authenticator$refresh()
+      }
+
+      # Rebuilt on each attempt so a retry after refresh() picks up the new
+      # Authorization header rather than replaying the stale one.
+      build_req <- function() {
+        request_headers <- self$get_headers()
+        if (!is.null(headers)) {
+          request_headers <- c(request_headers, headers)
+        }
+
+        base_url <- self$config$get_api_base_url()
+        full_url <- paste0(base_url, url)
+
+        req <- httr2::request(full_url)
+
+        # Add headers one by one (required for proper httr2 behavior)
+        for (header_name in names(request_headers)) {
+          header_value <- request_headers[[header_name]]
+          req <- httr2::req_headers(req, !!header_name := header_value)
+        }
+
+        if (!is.null(query_params)) {
+          req <- do.call(
+            httr2::req_url_query,
+            c(list(.req = req, .multi = "explode"), query_params)
+          )
+        }
+
+        req_method <- toupper(method)
+        if (!req_method %in% c("GET", "POST", "PUT", "PATCH", "DELETE")) {
+          stop("Unsupported HTTP method: ", req_method)
+        }
+
+        req_payload <- payload
+        if (req_method == "POST" && is.null(req_payload)) {
+          req_payload <- list()
+        }
+        if (!is.null(req_payload)) {
+          req <- httr2::req_body_json(req, req_payload)
+        }
+
+        req <- httr2::req_method(req, req_method)
+
+        if (!is.null(timeout)) {
+          req <- httr2::req_timeout(req, timeout)
+        }
+
+        req
+      }
+
+      # A locally cached token can look unexpired yet still be rejected by
+      # the server (e.g. after an API redeploy invalidates prior tokens).
+      # On a 401, force a fresh token and retry the request exactly once.
+      # If the authenticator can't refresh (e.g. a caller-supplied user
+      # token), surface the original 401 rather than the refresh error, so
+      # the failure stays clear and no automatic refresh is implied.
+      response <- tryCatch(
+        httr2::req_perform(build_req()),
+        httr2_http_401 = function(e) {
+          refreshed <- tryCatch(self$authenticator$refresh(), error = function(refresh_err) NULL)
+          if (is.null(refreshed)) {
+            stop(e)
+          }
+          self$authenticator <- refreshed
+          httr2::req_perform(build_req())
+        }
+      )
+      self$parse_response(response)
     },
     
     #' @description Make a GET request to the API
@@ -78,77 +156,55 @@ EbxClient <- R6::R6Class(
     #' @param timeout Request timeout in seconds (optional)
     #' @return The parsed response data
     get = function(url, query_params = NULL, headers = NULL, timeout = NULL) {
-      if (self$authenticator$has_expired()) {
-        self$authenticator <- self$authenticator$refresh()
-      }
-      
-      request_headers <- self$get_headers()
-      if (!is.null(headers)) {
-        request_headers <- c(request_headers, headers)
-      }
-      
-      base_url <- self$config$get_api_base_url()
-      full_url <- paste0(base_url, url)
-      
-      req <- httr2::request(full_url)
-      
-      # Add headers one by one (required for proper httr2 behavior)
-      for (header_name in names(request_headers)) {
-        header_value <- request_headers[[header_name]]
-        req <- httr2::req_headers(req, !!header_name := header_value)
-      }
-      
-      if (!is.null(query_params)) {
-        req <- httr2::req_url_query(req, !!!query_params)
-      }
-      
-      if (!is.null(timeout)) {
-        req <- httr2::req_timeout(req, timeout)
-      }
-      
-      response <- httr2::req_perform(req)
-      self$parse_response(response)
+      self$request("GET", url, query_params, headers = headers, timeout = timeout)
     },
-    
+
     #' @description Make a POST request to the API
     #' @param url The endpoint URL
     #' @param payload The request payload (optional)
     #' @param headers Additional headers (optional)
     #' @param timeout Request timeout in seconds (optional)
+    #' @param query_params Query parameters (optional)
     #' @return The parsed response data
-    post = function(url, payload = NULL, headers = NULL, timeout = NULL) {
-      if (self$authenticator$has_expired()) {
-        self$authenticator <- self$authenticator$refresh()
-      }
-      
-      request_headers <- self$get_headers()
-      if (!is.null(headers)) {
-        request_headers <- c(request_headers, headers)
-      }
-      
-      base_url <- self$config$get_api_base_url()
-      full_url <- paste0(base_url, url)
-      
-      if (is.null(payload)) {
-        payload <- list()
-      }
-      
-      req <- httr2::request(full_url)
-      
-      # Add headers one by one (required for proper httr2 behavior)
-      for (header_name in names(request_headers)) {
-        header_value <- request_headers[[header_name]]
-        req <- httr2::req_headers(req, !!header_name := header_value)
-      }
-      
-      req <- httr2::req_body_json(req, payload)
-      
-      if (!is.null(timeout)) {
-        req <- httr2::req_timeout(req, timeout)
-      }
-      
-      response <- httr2::req_perform(req)
-      self$parse_response(response)
+    post = function(url, payload = NULL, headers = NULL, timeout = NULL,
+                    query_params = NULL) {
+      self$request(
+        "POST", url, query_params = query_params, payload = payload,
+        headers = headers, timeout = timeout
+      )
+    },
+
+    #' @description Make a PUT request to the API
+    #' @param url The endpoint URL
+    #' @param payload Request payload (optional)
+    #' @param query_params Query parameters (optional)
+    #' @param headers Additional headers (optional)
+    #' @param timeout Request timeout in seconds (optional)
+    #' @return The parsed response data
+    put = function(url, payload = NULL, query_params = NULL, headers = NULL, timeout = NULL) {
+      self$request("PUT", url, query_params, payload, headers, timeout)
+    },
+
+    #' @description Make a PATCH request to the API
+    #' @param url The endpoint URL
+    #' @param payload Request payload (optional)
+    #' @param query_params Query parameters (optional)
+    #' @param headers Additional headers (optional)
+    #' @param timeout Request timeout in seconds (optional)
+    #' @return The parsed response data
+    patch = function(url, payload = NULL, query_params = NULL, headers = NULL, timeout = NULL) {
+      self$request("PATCH", url, query_params, payload, headers, timeout)
+    },
+
+    #' @description Make a DELETE request to the API
+    #' @param url The endpoint URL
+    #' @param query_params Query parameters (optional)
+    #' @param payload Request payload (optional)
+    #' @param headers Additional headers (optional)
+    #' @param timeout Request timeout in seconds (optional)
+    #' @return The parsed response data
+    delete = function(url, query_params = NULL, payload = NULL, headers = NULL, timeout = NULL) {
+      self$request("DELETE", url, query_params, payload, headers, timeout)
     }
   )
 )
@@ -235,6 +291,29 @@ auth_using_env <- function(name = NULL, config = NULL) {
   }
   
   authenticator <- EnvAuthentication$new(config)
+  auth_using(authenticator, config, name)
+}
+
+#' @title Authenticate using a user API token
+#' @description Register a supplied bearer token without login or persistence.
+#'   This is intended for short-lived user tokens with privileged API access.
+#' @details The token is neither refreshed nor stored by this client. This
+#'   function does not perform login, App Check, or permission elevation; the
+#'   supplied token must already be valid and authorized by the API server.
+#' @param token A non-empty bearer token supplied by the caller
+#' @param name The client name (optional)
+#' @param config The client configuration (optional)
+#' @return An EbxClient object
+#' @export
+auth_using_token <- function(token, name = NULL, config = NULL) {
+  if (!is.character(token) || length(token) != 1L || is.na(token) || !nzchar(token)) {
+    stop("token must be a non-empty character string")
+  }
+  if (is.null(config)) {
+    config <- ClientConfig$new()
+  }
+
+  authenticator <- UserTokenAuthentication$new(config, token)
   auth_using(authenticator, config, name)
 }
 

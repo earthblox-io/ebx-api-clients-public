@@ -4,11 +4,11 @@
 \name{ebx-package}
 \alias{ebx}
 \alias{ebx-package}
-\title{ebx: Earth Blox API Client for R}
+\title{ebx: 'Earth Blox' API Client}
 \description{
-R client library for the Earth Blox API. Provides authentication
-and endpoints for interacting with Earth Blox geospatial analytics services.
-Compatible with Shiny for R applications.
+Client library for the 'Earth Blox' API. Provides authentication
+and endpoints for interacting with 'Earth Blox' geospatial analytics services.
+Compatible with 'Shiny' applications.
 }
 \section{Authentication}{
 
@@ -40,7 +40,12 @@ Available endpoints include:
 }
 
 \author{
-\strong{Maintainer}: Earth Blox \email{n.mayo@earthblox.io}
+\strong{Maintainer}: Neil Mayo \email{n.mayo@earthblox.io}
+
+Other contributors:
+\itemize{
+  \item Quosient Ltd. [copyright holder]
+}
 
 }
 \keyword{internal}

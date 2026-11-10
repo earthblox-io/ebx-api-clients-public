@@ -10,7 +10,27 @@ test_that("ClientConfig initializes with default values", {
   expect_equal(config$base_url, "https://api.earthblox.io")
   expect_equal(config$api_prefix, "/v1beta")
   expect_equal(config$oauth_path, "/services/oauth/token/")
-  expect_s3_class(config$persistence_driver, "LocalFilePersistence")
+  # Default driver writes to a sub-directory of tempdir().
+  expect_true(inherits(config$persistence_driver, "LocalFilePersistence"))
+})
+
+test_that("ClientConfig accepts MemoryPersistence via constructor", {
+  config <- ClientConfig$new(persistence_driver = MemoryPersistence$new())
+  expect_true(inherits(config$get_persistence_driver(), "MemoryPersistence"))
+})
+
+test_that("ClientConfig set_persistence_driver() replaces the driver", {
+  config <- ClientConfig$new()
+  config$set_persistence_driver(MemoryPersistence$new())
+  expect_true(inherits(config$get_persistence_driver(), "MemoryPersistence"))
+})
+
+test_that("MemoryPersistence works end-to-end through ClientConfig", {
+  config <- ClientConfig$new(persistence_driver = MemoryPersistence$new())
+  driver <- config$get_persistence_driver()
+  driver$save("test.json", list(key = "value"))
+  expect_true(driver$exists("test.json"))
+  expect_equal(driver$load("test.json")$key, "value")
 })
 
 test_that("ClientConfig respects environment variables", {

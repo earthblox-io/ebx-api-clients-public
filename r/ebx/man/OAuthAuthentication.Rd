@@ -7,7 +7,7 @@
 Authentication using OAuth client credentials
 }
 \section{Super class}{
-\code{ebx::AbstractAuthentication} -> \code{OAuthAuthentication}
+\code{\link[ebx:AbstractAuthentication]{ebx::AbstractAuthentication}} -> \code{OAuthAuthentication}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

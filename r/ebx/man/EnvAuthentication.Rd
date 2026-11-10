@@ -7,7 +7,7 @@
 Authentication using environment variable token
 }
 \section{Super class}{
-\code{ebx::AbstractAuthentication} -> \code{EnvAuthentication}
+\code{\link[ebx:AbstractAuthentication]{ebx::AbstractAuthentication}} -> \code{EnvAuthentication}
 }
 \section{Methods}{
 \subsection{Public methods}{

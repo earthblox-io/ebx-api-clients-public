@@ -13,9 +13,10 @@ LocalFilePersistence <- R6::R6Class(
     path = NULL,
     
     #' @description Create a new LocalFilePersistence object
-    #' @param path The directory path for storing files
+    #' @param path The directory path for storing files. Must be supplied
+    #'   explicitly; no default is provided to comply with CRAN policy.
     #' @return A new LocalFilePersistence object
-    initialize = function(path = API_SECRETS_PATH) {
+    initialize = function(path) {
       self$path <- path
       # Directory is created lazily on first save() to avoid writing to the
       # filesystem at construction time (required by CRAN policy).
@@ -63,7 +64,6 @@ LocalFilePersistence <- R6::R6Class(
 #'   environments such as shinyapps.io where the local filesystem is not
 #'   writable). Data is lost when the R session ends.
 #' @importFrom R6 R6Class
-#' @importFrom jsonlite fromJSON toJSON
 #' @export
 MemoryPersistence <- R6::R6Class(
   "MemoryPersistence",
@@ -79,7 +79,7 @@ MemoryPersistence <- R6::R6Class(
 
     #' @description Save data to memory
     #' @param filename The key to store data under
-    #' @param data The data to save (serialised via JSON for consistency)
+    #' @param data The data to save (stored in its native R form)
     #' @return NULL (invisible)
     save = function(filename, data) {
       self$store[[filename]] <- data
@@ -100,7 +100,7 @@ MemoryPersistence <- R6::R6Class(
     #' @param filename The key to check
     #' @return TRUE if the key exists, FALSE otherwise
     exists = function(filename) {
-      !is.null(self$store[[filename]])
+      filename %in% names(self$store)
     }
   )
 )

@@ -4,14 +4,16 @@
 \alias{list_runs}
 \title{List Runs}
 \usage{
-list_runs(limit = 10)
+list_runs(limit = 10, include_json = FALSE)
 }
 \arguments{
 \item{limit}{The maximum number of runs to return (default: 10)}
+
+\item{include_json}{Whether to request each run's raw JSON payload}
 }
 \value{
 A list of Run objects
 }
 \description{
-List runs with optional limit
+List runs with optional limit and raw JSON payloads
 }

@@ -4,14 +4,16 @@
 \alias{get_run}
 \title{Get Run}
 \usage{
-get_run(run_id)
+get_run(run_id, include_json = FALSE)
 }
 \arguments{
 \item{run_id}{The run ID}
+
+\item{include_json}{Whether to request the raw JSON payload}
 }
 \value{
 A Run object
 }
 \description{
-Get a specific run by ID
+Get a specific run by ID, optionally including its raw JSON payload
 }

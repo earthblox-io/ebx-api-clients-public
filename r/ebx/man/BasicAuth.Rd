@@ -7,7 +7,7 @@
 Authentication using username and password
 }
 \section{Super class}{
-\code{ebx::AbstractAuthentication} -> \code{BasicAuth}
+\code{\link[ebx:AbstractAuthentication]{ebx::AbstractAuthentication}} -> \code{BasicAuth}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
